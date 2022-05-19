@@ -1,57 +1,73 @@
-import React, { useEffect } from "react";
+import React from "react";
 import auth from "../firebase.init";
 import {
-   useSignInWithEmailAndPassword,
+   useCreateUserWithEmailAndPassword,
    useSignInWithGoogle,
+   useUpdateProfile,
 } from "react-firebase-hooks/auth";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import Loading from "../Components/Loading/Loading";
 import useToken from "../hooks/useToken";
+import Loading from "../Components/Loading/Loading";
 
-const Login = () => {
-   const [signInWithEmailAndPassword, user, loading, error] =
-      useSignInWithEmailAndPassword(auth);
+const Register = () => {
+   const [createUserWithEmailAndPassword, user, loading, error] =
+      useCreateUserWithEmailAndPassword(auth);
+   const [updateProfile] = useUpdateProfile(auth);
    const [signInWithGoogle, gUser, gLoading, gError] =
       useSignInWithGoogle(auth);
+   const navigate = useNavigate();
+   const [token] = useToken(user || gUser);
    const {
       register,
       handleSubmit,
       formState: { errors },
       reset,
    } = useForm();
-   const navigate = useNavigate();
-   const location = useLocation();
-   const [token] = useToken(user || gUser);
-   const from = location.state?.from?.pathname || "/";
 
-   useEffect(() => {
-      if (token) {
-         navigate(from, { replace: true });
-      }
-   }, [token, from, navigate]);
-
-   if (loading || gLoading) {
-      return <Loading></Loading>;
+   if (error) {
+      return (
+         <div>
+            <p>Error: {error.message}</p>
+         </div>
+      );
+   }
+   if (loading) {
+      return <Loading></Loading>
+   }
+   if (token) {
+      navigate("/appointment");
    }
 
-   const handleLogin = (data) => {
-      const { email, password } = data;
-      signInWithEmailAndPassword(email, password);
+   const handleRegister = async (data) => {
+      const { name, email, password } = data;
+      await createUserWithEmailAndPassword(email, password);
+      await updateProfile({ displayName: name });
       reset();
    };
    return (
       <div className="flex justify-center items-center h-screen">
          <div className="card w-96 bg-slate-100 shadow-xl">
             <div className="card-body">
-               <h2 className="card-title justify-center mb-3">Login</h2>
+               <h2 className="card-title justify-center mb-3">Register</h2>
 
                <div>
                   <div className="mb-5">
                      <form
-                        onSubmit={handleSubmit(handleLogin)}
+                        onSubmit={handleSubmit(handleRegister)}
                         className=" flex flex-col gap-2"
                      >
+                        <input
+                           {...register("name", { required: true })}
+                           className="input input-bordered w-full bg-slate-100"
+                           type="text"
+                           placeholder="Full name"
+                        />
+                        {errors.name?.type === "required" && (
+                           <p className="text-red-400 text-sm">
+                              Name is required!
+                           </p>
+                        )}
                         <input
                            {...register("email", { required: true })}
                            className="input input-bordered w-full bg-slate-100"
@@ -64,7 +80,11 @@ const Login = () => {
                            </p>
                         )}
                         <input
-                           {...register("password", { required: true })}
+                           {...register("password", {
+                              required: true,
+                              pattern:
+                                 /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+                           })}
                            className="input input-bordered w-full bg-slate-100"
                            type="password"
                            placeholder="Password"
@@ -74,22 +94,26 @@ const Login = () => {
                               Password is required!
                            </p>
                         )}
-                        <Link to="/reset-password" className=" text-sm">
-                           Forgot Password?
-                        </Link>
+                        {errors.password?.type === "pattern" && (
+                           <p className="text-red-400">
+                              Password should have minimum eight characters, at
+                              least one uppercase, one lowercase, one number and
+                              one special character
+                           </p>
+                        )}
 
                         <input
                            type="submit"
-                           value="Login"
+                           value="Register"
                            className="btn btn=primary text-white mt-3"
                         />
                         <p className="text-sm">
-                           New to doctors portal?
+                           Have an account?
                            <Link
-                              to="/register"
+                              to="/login"
                               className="underline ml-1 text-primary"
                            >
-                              Create account
+                              Login here
                            </Link>
                         </p>
                      </form>
@@ -110,4 +134,4 @@ const Login = () => {
    );
 };
 
-export default Login;
+export default Register;

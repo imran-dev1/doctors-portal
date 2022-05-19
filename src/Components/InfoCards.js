@@ -11,19 +11,19 @@ const InfoCards = () => {
         title="Opening Hours"
         details="Lorem Ipsum is simply dummy text of the pri"
         img={clock}
-        bgclassName={`bg-gradient-to-r from-secondary text-white to-primary`}
+        bgClass={`bg-gradient-to-r from-secondary text-white to-primary`}
       ></Info>
       <Info
         title="Visit our location"
         details="Lorem Ipsum is simply dummy text of the pri"
         img={marker}
-        bgclassName={"bg-accent"}
+        bgClass={"bg-accent"}
       ></Info>
       <Info
         title="Contact us now"
         details="Lorem Ipsum is simply dummy text of the pri"
         img={phone}
-        bgclassName={`bg-gradient-to-r from-secondary text-white to-primary`}
+        bgClass={`bg-gradient-to-r from-secondary text-white to-primary`}
       ></Info>
     </div>
   );

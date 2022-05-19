@@ -8,14 +8,14 @@ const AvailableServices = ({ date }) => {
   const [appointment, setAppointment] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:4000/services")
+    fetch("http://localhost:4000/service")
       .then((res) => res.json())
       .then((data) => setServices(data));
   }, []);
   return (
     <div className="px-4 lg:px-10 py-20">
       <h2 className="text-secondary text-2xl text-center">
-        Available Appointments on{" "}
+        Available Appointments on
         <span className="font-medium">{format(date, "PP")}</span>
       </h2>
       <div
