@@ -6,8 +6,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import auth from "../firebase.init";
 
-const AppointmentModal = ({ appointment, date, setAppointment }) => {
-   const { _id, name, slots } = appointment;
+const AppointmentModal = ({ appointment, date, setAppointment, refetch }) => {
+   const { _id, name, available } = appointment;
    const [user] = useAuthState(auth);
 
    const {
@@ -18,18 +18,19 @@ const AppointmentModal = ({ appointment, date, setAppointment }) => {
    } = useForm();
 
    const handleBook = (data) => {
-      const { patient_name, email, phone, time } = data;
+      const { patient_name, phone, time } = data;
+      const formattedDate = format(date, "PP");
       const appointment = {
-         date: format(date, "PP"),
+         date: formattedDate,
          time,
          service: name,
          service_id: _id,
          patient_name,
-         email,
+         email: user.email,
          phone,
       };
 
-      fetch("http://localhost:4000/service", {
+      fetch("http://localhost:4000/appointment", {
          method: "POST",
          headers: {
             "content-type": "application/json",
@@ -38,10 +39,16 @@ const AppointmentModal = ({ appointment, date, setAppointment }) => {
       })
          .then((res) => res.json())
          .then((data) => {
-            if (data.acknowledged) {
+            if (data.success) {
                reset();
+               refetch();
                setAppointment(null);
-               toast.success("You have booked a slot!");
+
+               toast.success(`Appointment is set, ${formattedDate} at ${time}`);
+            } else {
+               toast.info(
+                  `You already have an appointment for this service on ${data.appointment?.date} at ${data.appointment?.time} `
+               );
             }
          });
    };
@@ -74,7 +81,7 @@ const AppointmentModal = ({ appointment, date, setAppointment }) => {
                      className="select select-bordered w-full"
                   >
                      <option value="">Select time</option>
-                     {slots.map((slot, index) => (
+                     {available.map((slot, index) => (
                         <option key={index} value={slot}>
                            {slot}
                         </option>
@@ -97,24 +104,13 @@ const AppointmentModal = ({ appointment, date, setAppointment }) => {
                      </p>
                   )}
                   <input
-                     {...register("email", {
-                        required: true,
-                        pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
-                     })}
                      className="input input-bordered w-full"
                      type="text"
                      placeholder="Email"
+                     disabled
+                     value={user.email}
                   />
-                  {errors.email?.type === "required" && (
-                     <p className="text-red-400 text-sm">
-                        Please enter your email!
-                     </p>
-                  )}
-                  {errors.email?.type === "pattern" && (
-                     <p className="text-red-400 text-sm">
-                        Please enter valid email address!
-                     </p>
-                  )}
+
                   <input
                      {...register("phone", {
                         required: true,

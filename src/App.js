@@ -48,7 +48,10 @@ function App() {
                ></Route>
             </Route>
          </Routes>
-         <ToastContainer></ToastContainer>
+         <ToastContainer
+            position="top-center"
+            autoClose={2000}
+         ></ToastContainer>
          <Footer></Footer>
       </div>
    );

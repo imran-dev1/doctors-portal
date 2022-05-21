@@ -3,8 +3,8 @@ import { Link, Outlet } from "react-router-dom";
 
 const Dashboard = () => {
    return (
-      <div className="mx-auto py-16" style={{ maxWidth: "1150px" }}>
-         <div class="drawer drawer-mobile py-5 h-auto">
+      <div className="mx-auto" style={{ maxWidth: "1150px" }}>
+         <div class="drawer drawer-mobile py-5 h-screen">
             <input
                id="dashboard-drawer"
                type="checkbox"
@@ -34,3 +34,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

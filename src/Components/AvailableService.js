@@ -5,7 +5,7 @@ import auth from "../firebase.init";
 
 const AvailableService = ({ service, setAppointment }) => {
    const [user] = useAuthState(auth);
-   const { name, slots } = service;
+   const { name, available } = service;
    const location = useLocation();
    const navigate = useNavigate();
    const handleBook = (service) => {
@@ -18,19 +18,19 @@ const AvailableService = ({ service, setAppointment }) => {
    return (
       <div className="text-center shadow-lg p-4 rounded-xl border shadow-slate-200 bg-white">
          <h2 className="text-secondary text-lg font-medium mb-2">{name}</h2>
-         <p className=" mb-2">{slots.length ? slots[0] : "Try another date"}</p>
+         <p className=" mb-2">{available.length ? available[0] : "Try another date"}</p>
          <p className=" mb-5">
-            {slots.length} {slots.length > 0 ? "slots" : "slot"} available
+            {available.length} {available.length > 0 ? "slots" : "slot"} available
          </p>
          <label
             onClick={() => handleBook(service)}
             htmlFor="booking-modal"
             className={`btn btn-primary ${
-               slots.length
+               available.length
                   ? "bg-gradient-to-r from-secondary to-primary text-white"
                   : "bg-slate-50 text-slate-800 hover:bg-slate-50 border-0"
             }`}
-            disabled={slots.length === 0 ? true : false}
+            disabled={available.length === 0 ? true : false}
          >
             Book Appointment
          </label>
