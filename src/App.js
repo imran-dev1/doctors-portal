@@ -16,6 +16,7 @@ import RequireAuth from "./Components/RequireAuth";
 import MyAppointments from "./Pages/MyAppointments";
 import AddDoctor from "./Pages/AddDoctor";
 import Users from "./Pages/Users";
+import RequireAdmin from "./Components/RequireAdmin";
 
 function App() {
    return (
@@ -41,7 +42,14 @@ function App() {
                }
             >
                <Route index element={<MyAppointments></MyAppointments>}></Route>
-               <Route path="users" element={<Users></Users>}></Route>
+               <Route
+                  path="users"
+                  element={
+                     <RequireAdmin>
+                        <Users></Users>
+                     </RequireAdmin>
+                  }
+               ></Route>
                <Route
                   path="add-doctor"
                   element={<AddDoctor></AddDoctor>}

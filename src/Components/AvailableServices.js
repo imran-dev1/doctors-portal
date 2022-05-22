@@ -7,7 +7,6 @@ import Loading from "./Loading/Loading";
 
 const AvailableServices = ({ date }) => {
   const [appointment, setAppointment] = useState(null);
-  console.log(appointment);
    const formattedDate = format(date, "PP");
    const {
       data: services,
